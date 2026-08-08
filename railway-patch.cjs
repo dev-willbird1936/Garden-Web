@@ -2,6 +2,18 @@ const fs=require("fs"),cp=require("child_process");
 let g=fs.readFileSync("js/garden.js","utf8"),m=fs.readFileSync("js/main.js","utf8"),h=fs.readFileSync("index.html","utf8");
 const need=(s,x,n)=>{if(!s.includes(x))throw Error(n)};
 
+const alreadyPatched = [
+  g.includes('const improvedMode = new URLSearchParams(window.location.search).get("improved") === "1";'),
+  g.includes('setClutterVisible(visible) { clutterGroup.visible = Boolean(visible); }'),
+  m.includes('const clutterToggle=document.getElementById("clutterToggle");'),
+  m.includes('const improvedToggle=document.getElementById("improvedToggle");'),
+  h.includes('id="improvedToggle"'),
+].every(Boolean);
+if (alreadyPatched) {
+  console.log("GARDEN_BUILD_PATCH_ALREADY_APPLIED");
+  process.exit(0);
+}
+
 need(g,"  const g = new THREE.Group();\n  scene.add(g);","garden group");
 g=g.replace(
   "  const g = new THREE.Group();\n  scene.add(g);",
